@@ -210,7 +210,6 @@ function loadMessages() {
         });
       });
       if (!recomputeall && markerCluster) {
-      // if (markerCluster) {
           markerCluster.clearMarkers();
       }
       markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
@@ -507,6 +506,8 @@ function displayMessage(id, timestamp, name, text, picUrl, imageUrl, lat, lng) {
   if (picUrl) {
     div.querySelector('.pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(picUrl) + ')';
   }
+
+    if (!timestamp) return;
 
   var dist_away = Math.round(latlng_dist(pos_lat,pos_lng, lat,lng));
   div.querySelector('.name').textContent = name + " ("+formatAMPM(timestamp.toDate()) + "  ~" + dist_away + "mi away)";
