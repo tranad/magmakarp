@@ -1,4 +1,8 @@
 var name_message_pairs = [
+    ["PATTERN", "Inappropriate? Such as... dividing by zero?"],
+    ["JASNAH", "A woman's strength should not be in her role, whatever she chooses to be, but in the power to choose that role."],
+    ["KALADIN", "Life before death, strength before weakness, journey before destination."],
+    ["DALINAR", "The most important step a man can take. It's not the first one, is it? It's the next one. Always the next step, Dalinar."],
     ["JAKE",  "No."],
     ["NICK",  "Rory Breaker is standing by. You stand to make a lot of money, Tommy boy."],
     ["FERGUS",  "Dil!"],
