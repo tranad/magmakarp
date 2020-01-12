@@ -154,7 +154,7 @@ function loadMessages() {
         deleteMessage(change.doc.id);
       } else {
         displayMessage(change.doc.id, message.timestamp, message.name,
-                       message.text, message.profilePicUrl, message.imageUrl);
+                       message.text, message.profilePicUrl, message.imageUrl, message.lat, message.lng);
         locations[change.doc.id] = {lat:lat, lng:lng};
           // console.log("added this to locations dict:",change.doc.id);
         // console.log(locations);
