@@ -168,6 +168,7 @@ function loadMessages() {
 
     if (recomputeall) {
       // locations = [];
+      var cloud_text = "";
       firebase.firestore().collection("messages").get().then(snapshot => {
           snapshot.forEach(doc => {
                     var message = doc.data();
@@ -186,6 +187,7 @@ function loadMessages() {
                     } else {
                       displayMessage(doc.id, message.timestamp, message.name,
                                     message.text, message.profilePicUrl, message.imageUrl, message.lat, message.lng);
+                      cloud_text = cloud_text+" "+message.text;
                       // locations.push({lat:lat, lng:lng});
                       // console.log(locations);
                       // console.log("foreach iteration");
@@ -195,7 +197,14 @@ function loadMessages() {
 
           })
         });
-
+        var wf = WordFreq(options)
+          .process(cloud_text)
+          .getList(function (list) {
+            console.log("list: "+list);
+            console.log("cloud_text: "+cloud_text);
+            WordCloud.minFontSize="15px"
+            WordCloud(document.getElementById('cloud'), { list: list } );
+          });
     }
 
 
@@ -302,34 +311,6 @@ function saveImageMessage(file) {
   });
 }
 
-// Saves the messaging device token to the datastore.
-function saveMessagingDeviceToken() {
-  firebase.messaging().getToken().then(function(currentToken) {
-    if (currentToken) {
-      console.log('Got FCM device token:', currentToken);
-      // Saving the Device Token to the datastore.
-      firebase.firestore().collection('fcmTokens').doc(currentToken)
-          .set({uid: firebase.auth().currentUser.uid});
-    } else {
-      // Need to request permissions to show notifications.
-      requestNotificationsPermissions();
-    }
-  }).catch(function(error){
-    console.error('Unable to get messaging token.', error);
-  });
-}
-
-// Requests permissions to show notifications.
-function requestNotificationsPermissions() {
-  console.log('Requesting notifications permission...');
-  firebase.messaging().requestPermission().then(function() {
-    // Notification permission granted.
-    saveMessagingDeviceToken();
-  }).catch(function(error) {
-    console.error('Unable to get permission to notify.', error);
-  });
-}
-
 // Triggered when a file is selected via the media picker.
 function onMediaFileSelected(event) {
   event.preventDefault();
@@ -385,8 +366,6 @@ function authStateObserver(user) {
     // Hide sign-in button.
     signInButtonElement.setAttribute('hidden', 'true');
 
-    // We save the Firebase Messaging Device token and enable notifications.
-    saveMessagingDeviceToken();
   } else { // User is signed out!
     // Hide user's profile and sign-out button.
     userNameElement.setAttribute('hidden', 'true');
@@ -605,7 +584,8 @@ function addMessages(num) {
         // console.log(ln);
         batch.set(db.collection('messages').doc(), {
                 name:"John Doe",
-                text:"Hello from " +lat +", "+lng,
+                // text:"Hello from " +lat +", "+lng,
+                text: ["Hello", "Bye"][Math.floor(Math.random() * 2)],
                 lat: lat,
                 lng: lng,
                 accuracy:20,
@@ -633,6 +613,24 @@ function latlng_dist(lat1, lng1, lat2, lng2, xonly=false, yonly=false) {
     }
     return answer
 }
+
+// Create an options object for initialization
+var options = {
+    workerUrl: 'scripts/wordfreq.worker.js' };
+
+// var txt = "foo foo foo foo bar bar bar";
+// var LIST = [ [ 'foo', 16 ], [ 'bar', 22 ] ];
+// var wf = WordFreq(options)
+//   .process(txt)
+//   .process(txt)
+//   .process(txt)
+//   .process(txt)
+//   .getList(function (list) {
+//     console.log("list: "+list);
+//     WordCloud.minFontSize="15px"
+//     WordCloud(document.getElementById('cloud'), { list: list } );
+//   });
+
 
 // We load currently existing chat messages and listen to new ones.
 loadMessages();
