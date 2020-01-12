@@ -202,8 +202,7 @@ function loadMessages() {
           .getList(function (list) {
             console.log("list: "+list);
             console.log("cloud_text: "+cloud_text);
-            WordCloud.minFontSize="15px"
-            WordCloud(document.getElementById('cloud'), { list: list } );
+            WordCloud(document.getElementById('cloud'), { list: list, minFontSize: 15} );
           });
     }
 
