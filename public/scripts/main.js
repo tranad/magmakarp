@@ -15,7 +15,6 @@
  */
 'use strict';
 
-// Signs-in Friendly Chat.
 function signIn() {
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider);
@@ -23,18 +22,7 @@ function signIn() {
 
 }
 
-// Signs-out of Friendly Chat.
-function signOut(e) {
-  // firebase.auth().signOut();
-  e.preventDefault();
-  // Check that the user entered a message and is signed in.
-  // if (messageInputElement.value && checkSignedInWithMessage()) {
-  //   saveMessage(messageInputElement.value).then(function() {
-  //     // Clear message text field and re-enable the SEND button.
-  //     resetMaterialTextfield(messageInputElement);
-  //     toggleButton();
-  //   });
-  // }
+function signOut() {
 }
 
 // Initiate firebase auth.
