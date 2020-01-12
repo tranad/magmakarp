@@ -62,8 +62,7 @@ function isUserSignedIn() {
 var pos_lat = 34.41163;
 var pos_lng = -119.84766;
 var pos_accuracy = 20;
-var locations = [
-];
+var locations = {};
 
 function positionCallback(position) {
     pos_lat = position.coords.latitude;
@@ -209,9 +208,9 @@ function loadMessages() {
 
     if (!recomputeall) {
       var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      var markers = locations.map(function(location, i) {
+      var markers = Object.values(locations).map(function(value, i) {
         return new google.maps.Marker({
-          position: location,
+          position: {lat:value.lat, lng:value.lng},
           label: labels[i % labels.length]
         });
       });
