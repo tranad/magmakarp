@@ -187,7 +187,7 @@ function loadMessages() {
                     } else {
                       displayMessage(doc.id, message.timestamp, message.name,
                                     message.text, message.profilePicUrl, message.imageUrl, message.lat, message.lng);
-                      cloud_text = cloud_text+" "+message.text;
+                      // cloud_text = cloud_text+" "+message.text;
                       // locations.push({lat:lat, lng:lng});
                       // console.log(locations);
                       // console.log("foreach iteration");
@@ -197,13 +197,13 @@ function loadMessages() {
 
           })
         });
-        var wf = WordFreq(options)
-          .process(cloud_text)
-          .getList(function (list) {
-            console.log("list: "+list);
-            console.log("cloud_text: "+cloud_text);
-            WordCloud(document.getElementById('cloud'), { list: list, minFontSize: 15} );
-          });
+        // var wf = WordFreq(options)
+        //   .process(cloud_text)
+        //   .getList(function (list) {
+        //     console.log("list: "+list);
+        //     console.log("cloud_text: "+cloud_text);
+        //     WordCloud(document.getElementById('cloud'), { list: list, minFontSize: 15} );
+        //   });
     }
 
 
@@ -582,9 +582,9 @@ function addMessages(num) {
         // console.log(lt);
         // console.log(ln);
         batch.set(db.collection('messages').doc(), {
-                // name:generateName(),
+                name:generateName(),
                 // text:"Hello from " +lat +", "+lng,
-                name:"John Doe",
+                // name:"John Doe",
                 text: ["Hello", "Bye"][Math.floor(Math.random() * 2)],
                 lat: lat,
                 lng: lng,
@@ -614,9 +614,9 @@ function latlng_dist(lat1, lng1, lat2, lng2, xonly=false, yonly=false) {
     return answer
 }
 
-// Create an options object for initialization
-var options = {
-    workerUrl: 'scripts/wordfreq.worker.js' };
+// // Create an options object for initialization
+// var options = {
+//     workerUrl: 'scripts/wordfreq.worker.js' };
 
 // var txt = "foo foo foo foo bar bar bar";
 // var LIST = [ [ 'foo', 16 ], [ 'bar', 22 ] ];
