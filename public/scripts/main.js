@@ -583,8 +583,9 @@ function addMessages(num) {
         // console.log(lt);
         // console.log(ln);
         batch.set(db.collection('messages').doc(), {
-                name:"John Doe",
+                // name:generateName(),
                 // text:"Hello from " +lat +", "+lng,
+                name:"John Doe",
                 text: ["Hello", "Bye"][Math.floor(Math.random() * 2)],
                 lat: lat,
                 lng: lng,
