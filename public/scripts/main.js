@@ -140,12 +140,14 @@ function loadMessages() {
     )
 
     var recomputeall = false;
+    var onlypanned = false;
     snapshot.docChanges().forEach(function(change) {
       var message = change.doc.data();
       var lat = message.lat;
       var lng = message.lng;
       if (message.name == "fakefake") {
         recomputeall = true;
+        onlypanned = true;
         return;
       }
       var skip = ((lat < min_lat) || (lat > max_lat) || (lng < min_lng) || (lng > max_lng));
@@ -217,13 +219,15 @@ function loadMessages() {
           label: labels[i % labels.length]
         });
       });
-      if (!recomputeall && markerCluster) {
+      if (!onlypanned) {
+        if (markerCluster) {
           markerCluster.clearMarkers();
+        }
+        markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        var now = Date.now();
+        console.log("updated markers at ",now," since last: ",now-lastUpdatedMarkers);
+        lastUpdatedMarkers = now;
       }
-      markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      var now = Date.now();
-      console.log("updated markers at ",now," since last: ",now-lastUpdatedMarkers);
-      lastUpdatedMarkers = now;
     // }
 
 
@@ -577,15 +581,20 @@ function addMessages(num) {
     var batch = db.batch();
 
     for (var i = 0; i < num; i++) {
-        var lat = getRandomInRange(34.3,35,3);
-        var lng = getRandomInRange(-120,-119,3);
+        var lat = getRandomInRange(34.3,36,3);
+        var lng = getRandomInRange(-121,-118,3);
         // console.log(lt);
         // console.log(ln);
+        var nm = getNameMessage();
+        var name = nm[0];
+        var message = nm[1];
         batch.set(db.collection('messages').doc(), {
-                name:generateName(),
+                // name:generateName(),
+                name: name,
                 // text:"Hello from " +lat +", "+lng,
                 // name:"John Doe",
-                text: ["Hello", "Bye"][Math.floor(Math.random() * 2)],
+                // text: ["Hello", "Bye"][Math.floor(Math.random() * 2)],
+                text: message,
                 lat: lat,
                 lng: lng,
                 accuracy:20,
