@@ -643,3 +643,16 @@ function latlng_dist(lat1, lng1, lat2, lng2, xonly=false, yonly=false) {
 
 // We load currently existing chat messages and listen to new ones.
 loadMessages();
+
+
+$(function(){
+  $( "#logo" ).click(function() {
+    console.log("clicked on logo");
+    addMessages(5);
+      // $( "#logo" ).animate({
+      //     left: "+=50",
+      //     top: "-=50"
+      // }, 1500);
+  });
+
+});

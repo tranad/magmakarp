@@ -50,6 +50,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
   <link rel="stylesheet" href="styles/main.css">
 
+  <link rel="icon" type="image/png" href="images/logo180p.png">
+
+
   <!-- TODO: Enable First Input Delay polyfill library. -->
   <!--  <script type="text/javascript">!function(n,e){var t,o,i,c=[],f={passive:!0,capture:!0},r=new Date,a="pointerup",u="pointercancel";function p(n,c){t||(t=c,o=n,i=new Date,w(e),s())}function s(){o>=0&&o<i-r&&(c.forEach(function(n){n(o,t)}),c=[])}function l(t){if(t.cancelable){var o=(t.timeStamp>1e12?new Date:performance.now())-t.timeStamp;"pointerdown"==t.type?function(t,o){function i(){p(t,o),r()}function c(){r()}function r(){e(a,i,f),e(u,c,f)}n(a,i,f),n(u,c,f)}(o,t):p(o,t)}}function w(n){["click","mousedown","keydown","touchstart","pointerdown"].forEach(function(e){n(e,l,f)})}w(n),self.perfMetrics=self.perfMetrics||{},self.perfMetrics.onFirstInputDelay=function(n){c.push(n),s()}}(addEventListener,removeEventListener);</script> -->
 
@@ -63,7 +66,9 @@
   <header class="mdl-layout__header mdl-color-text--black mdl-color--orange-200">
     <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
       <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-        <h3><i class="material-icons">aspect_ratio</i> MagmaKarp</h3>
+        <!-- <h3><i class="material-icons">aspect_ratio</i> MagmaKarp</h3> -->
+        <img id="logo" class="" height="55px" style="" src="images/logo360p.png"></img>
+        <h3> &nbsp;&nbsp; MagmaKarp</h3>
       </div>
       <div id="user-container">
         <div hidden id="user-pic"></div>
@@ -146,13 +151,16 @@
 
 <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <!-- <script src="scripts/wordcloud2.js"></script> -->
 <!-- <script src="scripts/wordfreq.js"></script> -->
 <script src="scripts/name.js"></script>
 <script src="scripts/main.js"></script>
 
 
-<script async defer src="https://maps.googleapis.com/maps/api/js&callback=initMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=MYKEY&callback=initMap"></script>
 
 </body>
 </html>
