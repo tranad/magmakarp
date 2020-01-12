@@ -152,7 +152,7 @@ function loadMessages() {
         deleteMessage(change.doc.id);
       } else {
         displayMessage(change.doc.id, message.timestamp, message.name,
-                       message.text, message.profilePicUrl, message.imageUrl);
+                       message.text, message.profilePicUrl, message.imageUrl, message.lat, message.lng);
         locations.push({lat:lat, lng:lng});
         // console.log(locations);
         // console.log("foreach iteration");
@@ -180,7 +180,7 @@ function loadMessages() {
                       deleteMessage(doc.id);
                     } else {
                       displayMessage(doc.id, message.timestamp, message.name,
-                                    message.text, message.profilePicUrl, message.imageUrl);
+                                    message.text, message.profilePicUrl, message.imageUrl, message.lat, message.lng);
                       // locations.push({lat:lat, lng:lng});
                       // console.log(locations);
                       // console.log("foreach iteration");
@@ -476,8 +476,18 @@ function createAndInsertMessage(id, timestamp) {
   return div;
 }
 
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + '' + ampm;
+  return strTime;
+}
 // Displays a Message in the UI.
-function displayMessage(id, timestamp, name, text, picUrl, imageUrl) {
+function displayMessage(id, timestamp, name, text, picUrl, imageUrl, lat, lng) {
   var div = document.getElementById(id) || createAndInsertMessage(id, timestamp);
 
   // profile picture
@@ -485,7 +495,8 @@ function displayMessage(id, timestamp, name, text, picUrl, imageUrl) {
     div.querySelector('.pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(picUrl) + ')';
   }
 
-  div.querySelector('.name').textContent = name;
+  var dist_away = Math.round(latlng_dist(pos_lat,pos_lng, lat,lng));
+  div.querySelector('.name').textContent = name + " ("+formatAMPM(timestamp.toDate()) + "  ~" + dist_away + "mi away)";
   var messageElement = div.querySelector('.message');
 
   if (text) { // If the message is text.
@@ -583,6 +594,22 @@ function addMsg(nm) {
       profilePicUrl:"",
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then()
+}
+
+function latlng_dist(lat1, lng1, lat2, lng2, xonly=false, yonly=false) {
+    var r_earth = 3956.547; 
+    var miles_per_lat_deg = Math.PI*r_earth/180.0;
+    var miles_per_lng_deg = 2.0*Math.PI*r_earth*Math.cos(lat1*Math.PI/180.0)/360.0;
+    var dx = (lng1-lng2)*miles_per_lng_deg;
+    var dy = (lat1-lat2)*miles_per_lat_deg;
+    var answer = Math.sqrt(dx*dx + dy*dy);
+    if (xonly) {
+        return dx
+    }
+    if (yonly) {
+        return dy
+    }
+    return answer
 }
 
 // We load currently existing chat messages and listen to new ones.
