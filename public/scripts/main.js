@@ -51,6 +51,7 @@ var pos_lat = 34.41163;
 var pos_lng = -119.84766;
 var pos_accuracy = 20;
 var locations = {};
+var markerCluster = null;
 
 function positionCallback(position) {
     pos_lat = position.coords.latitude;
@@ -81,6 +82,7 @@ function saveMessage(messageText) {
 }
 
 // Loads chat messages history and listens for upcoming ones.
+var lastUpdatedMarkers = Date.now() - 100;
 function loadMessages() {
 
   // console.log(bounds);
@@ -147,13 +149,14 @@ function loadMessages() {
         return;
       }
       var skip = ((lat < min_lat) || (lat > max_lat) || (lng < min_lng) || (lng > max_lng));
-      console.log(min_lat, lat, max_lat, min_lng, lng, max_lng, skip);
+      // console.log(min_lat, lat, max_lat, min_lng, lng, max_lng, skip);
       if ((change.type === 'removed') || skip) {
         deleteMessage(change.doc.id);
       } else {
         displayMessage(change.doc.id, message.timestamp, message.name,
                        message.text, message.profilePicUrl, message.imageUrl);
-        locations.push({lat:lat, lng:lng});
+        locations[change.doc.id] = {lat:lat, lng:lng};
+          // console.log("added this to locations dict:",change.doc.id);
         // console.log(locations);
         // console.log("foreach iteration");
         
@@ -175,7 +178,9 @@ function loadMessages() {
                       return;
                     }
                     var skip = ((lat < min_lat) || (lat > max_lat) || (lng < min_lng) || (lng > max_lng));
-                    console.log(min_lat, lat, max_lat, min_lng, lng, max_lng, skip);
+                    // console.log(min_lat, lat, max_lat, min_lng, lng, max_lng, skip);
+                    locations[doc.id] = {lat:lat, lng:lng};
+                      // console.log("added this to locations dict:",doc.id);
                     if (skip) {
                       deleteMessage(doc.id);
                     } else {
@@ -194,17 +199,25 @@ function loadMessages() {
     }
 
 
-    if (!recomputeall) {
+    // if (!recomputeall) {
       var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        // console.log(Object.values(locations));
       var markers = Object.values(locations).map(function(value, i) {
+          // console.log(value,i);
         return new google.maps.Marker({
           position: {lat:value.lat, lng:value.lng},
           label: labels[i % labels.length]
         });
       });
-      var markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      console.log("updated markers")
-    }
+      if (!recomputeall && markerCluster) {
+      // if (markerCluster) {
+          markerCluster.clearMarkers();
+      }
+      markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      var now = Date.now();
+      console.log("updated markers at ",now," since last: ",now-lastUpdatedMarkers);
+      lastUpdatedMarkers = now;
+    // }
 
 
 
@@ -223,7 +236,7 @@ var frequencyReduce = function(delay, callback){
 var map;
 // var bounds;
 function initMap() {
-  console.log("HERE");
+  // console.log("HERE");
   var myloc = {lat: pos_lat, lng: pos_lng};
   map = new google.maps.Map(
       document.getElementById('map'), {zoom: 7, center: myloc});
@@ -237,8 +250,8 @@ function initMap() {
     var bounds = map.getBounds();
 
     console.log("BOUNDS CHANGED")
-    console.log(bounds.getSouthWest().lat())
-    console.log(bounds.getSouthWest().lng())
+    // console.log(bounds.getSouthWest().lat())
+    // console.log(bounds.getSouthWest().lng())
     firebase.firestore().collection("messages").doc("viewcorner").set({
       lat:bounds.getSouthWest().lat(),
       lng:bounds.getSouthWest().lng(),
@@ -568,21 +581,29 @@ function getRandomInRange(from, to, fixed) {
     return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
     // .toFixed() returns string, so ' * 1' is a trick to convert to number
 }
-function addMsg(nm) {
-    console.log(nm);
-    var lt = getRandomInRange(-90,90,3);
-    var ln = getRandomInRange(-180,180,3);
-    console.log(lt);
-    console.log(ln);
-    return firebase.firestore().collection('messages').add({
-      name:nm,
-      text:"Fake text from "+nm+" at loc " +lt +", "+ln,
-      lat: lt,
-      lng: ln,
-      accuracy:20,
-      profilePicUrl:"",
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then()
+function addMessages(num) {
+    var proms = [];
+    var db = firebase.firestore();
+    var batch = db.batch();
+
+    for (var i = 0; i < num; i++) {
+        var lat = getRandomInRange(34.3,35,3);
+        var lng = getRandomInRange(-120,-119,3);
+        // console.log(lt);
+        // console.log(ln);
+        batch.set(db.collection('messages').doc(), {
+                name:"John Doe",
+                text:"Hello from " +lat +", "+lng,
+                lat: lat,
+                lng: lng,
+                accuracy:20,
+                profilePicUrl:"",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+    }
+    batch.commit().then(function () {
+        console.log("DONE COMMITTING");
+    });
 }
 
 // We load currently existing chat messages and listen to new ones.
